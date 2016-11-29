@@ -8,6 +8,7 @@ if __name__=='__main__':
     NIPS_URL = 'http://papers.nips.cc/'
     PAPER_DOWNLOAD_DIR = 'pdf/'
     CSV_NAME = 'NIPS' + str(nips_year)+'.csv'
+    DOWNLOAD = True
 
     if not os.path.exists(PAPER_DOWNLOAD_DIR):
         os.makedirs(PAPER_DOWNLOAD_DIR)
@@ -35,6 +36,8 @@ if __name__=='__main__':
         l_authors = [ t.text for t in soup.find_all('li', class_='author')]
         s_authors =  ';'.join(l_authors)
         print s_authors
+        if s_authors == '':
+            s_authors = '-'
 
         present_type = [t.text.split(':')[1].strip() for t in soup.find_all('h3') if 'Type' in t.text][0]
         print present_type
@@ -42,14 +45,19 @@ if __name__=='__main__':
         abstract = soup.find_all('p', class_='abstract')[0].text
         print abstract
 
-        paper_pdf_url = NIPS_URL + soup.find_all('a', string='[PDF]')[0]['href'][1:]
-        pdf_file_name = paper_pdf_url.split('/')[-1]
-        pdf_file_id = pdf_file_name.split('-')[0]
-        print pdf_file_name
-        with open(PAPER_DOWNLOAD_DIR + pdf_file_name, 'wb') as f:
-            f.write(requests.get(paper_pdf_url).content)
+        try:
+            paper_pdf_url = NIPS_URL + soup.find_all('a', string='[PDF]')[0]['href'][1:]
+            pdf_file_name = paper_pdf_url.split('/')[-1]
+            pdf_file_id = pdf_file_name.split('-')[0]
+            print pdf_file_name
+            if DOWNLOAD:
+                with open(PAPER_DOWNLOAD_DIR + pdf_file_name, 'wb') as f:
+                    f.write(requests.get(paper_pdf_url).content)
+        except:
+            pdf_file_name = '-'
+            pdf_file_id = '-'
 
-        row.append(idx)  # starts with 0
+        row.append(str(idx))  # starts with 0
         row.append(pdf_file_id)
         row.append(present_type)
         row.append(paper_title)
@@ -63,6 +71,6 @@ if __name__=='__main__':
 
     with open(CSV_NAME, 'w') as f:
         for row in l_papers:
-            f.write(','.join(row))
+            f.write(','.join(row).encode('utf-8'))
             f.write('\n')
 
