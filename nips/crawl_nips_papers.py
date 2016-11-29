@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import os
 
 if __name__=='__main__':
     nips_year = 2016
@@ -7,6 +8,9 @@ if __name__=='__main__':
     NIPS_URL = 'http://papers.nips.cc/'
     PAPER_DOWNLOAD_DIR = 'pdf/'
     CSV_NAME = 'NIPS' + str(nips_year)+'.csv'
+
+    if not os.path.exists(PAPER_DOWNLOAD_DIR):
+        os.makedirs(PAPER_DOWNLOAD_DIR)
 
     r = requests.get(NIPS_URL)
     soup = BeautifulSoup(r.text, 'html.parser')
