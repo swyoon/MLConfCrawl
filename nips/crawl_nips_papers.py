@@ -7,7 +7,7 @@ if __name__=='__main__':
     nips_year_text = ''
     NIPS_URL = 'http://papers.nips.cc/'
     PAPER_DOWNLOAD_DIR = 'pdf/'
-    CSV_NAME = 'NIPS' + str(nips_year)+'.csv'
+    CSV_NAME = 'NIPS' + str(nips_year)+'.tsv'
     DOWNLOAD = True
 
     if not os.path.exists(PAPER_DOWNLOAD_DIR):
@@ -34,7 +34,7 @@ if __name__=='__main__':
         paper_title = soup.find_all('h2', class_='subtitle')[0].text
         print paper_title
         l_authors = [ t.text for t in soup.find_all('li', class_='author')]
-        s_authors =  ';'.join(l_authors)
+        s_authors =  ','.join(l_authors)
         print s_authors
         if s_authors == '':
             s_authors = '-'
@@ -71,6 +71,6 @@ if __name__=='__main__':
 
     with open(CSV_NAME, 'w') as f:
         for row in l_papers:
-            f.write(','.join(row).encode('utf-8'))
+            f.write('\t'.join(row).encode('utf-8'))
             f.write('\n')
 
